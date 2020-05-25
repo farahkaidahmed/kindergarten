@@ -1,113 +1,198 @@
-#include "mainwindow.h"
+/*#include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "club.h"
-#include "salle.h"
-#include <QMessageBox>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-ui->setupUi(this);
-
-//ui->tabclub->setModel(tmpclub.afficher());
-//ui_s->tabsalle->setModel(tmpsalle.afficher());
-
+    ui->setupUi(this);
 }
-
-
-
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-
-void MainWindow::on_pb_ajouter_clicked()
+void MainWindow::on_ajout_Classe_clicked()
 {
-    QString nom= ui->lineEdit_nom->text();
-    int id = ui->lineEdit_id->text().toInt();
-    int prix = ui->lineEdit_prix->text().toInt();
-    int num_salle = ui->lineEdit_num_salle->text().toInt();
-  club e(nom,id,prix,num_salle);
-  bool test=e.ajouter();
-  if(test)
-{
+    int num_classe = ui->lineEdit_classe->text().toInt();
+    int num_salle= ui->lineEdit_Salle->text().toInt();
+    QString Maitresse=ui->lineEdit_Maitresse->text();
+    QString Niveau=ui->lineEdit_Niveau->text();
 
-      ui->tabclub->setModel(tmpclub.afficher());//refresh
-QMessageBox::information(nullptr, QObject::tr("Ajouter un club"),
-                  QObject::tr("club ajouté.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);
+    ui->comboBox_numclasse->clear();
+    QSqlQuery query;
+    query.prepare("SELECT NUM_CLASSE FROM CLASSE");
+    query.exec();
+    while (query.next()) {
+            QString num_classe=QString::number(query.value(0).toInt());
+            ui->comboBox_numclasse->addItem(num_classe);
+            ui->comboBox_numclasse_2->addItem(num_classe);
+    }
 
-}
-  else
-  {
-      QMessageBox::critical(nullptr, QObject::tr("Ajouter un club"),
-                  QObject::tr("Erreur !.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);}
-}
+    Classe c(num_classe,num_salle,Niveau,Maitresse);
+    bool test=c.ajouter();
+    ui->tabClasse->setModel(tmpClasse.afficher());
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_Maitresse->setText("");
+        ui->lineEdit_Niveau->setText("");
+        ui->lineEdit_Salle->setText(zero);
+        ui->lineEdit_classe->setText(zero);
 
-
-
-
-void MainWindow::on_pb_supprimer_clicked()
-{
-    int id = ui->lineEdit_id_2->text().toInt();
-    bool test=tmpclub.supprimer(id);
-    if(test)
-    {ui->tabclub->setModel(tmpclub.afficher());//refresh
-        QMessageBox::information(nullptr, QObject::tr("Supprimer un club"),
-                    QObject::tr("club supprimé.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);
 
     }
-    else
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Supprimer un club"),
-                    QObject::tr("Erreur !.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);}
-
 }
 
-
-
-void MainWindow::on_pb_ajouter_s_clicked()
+void MainWindow::on_pushButton_Supp_Classe_clicked()
 {
-    QString nom= ui->lineEdit_nom_s->text();
-    int num = ui->lineEdit_num_s->text().toInt();
-    int max = ui->lineEdit_max_s->text().toInt();
-  salle s(nom,num,max);
-  bool test=s.ajouter();
-  if(test)
-{
-
-      ui->tabsalle->setModel(tmpsalle.afficher());//refresh
-QMessageBox::information(nullptr, QObject::tr("Ajouter une salle"),
-                  QObject::tr("salle ajoutée.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);
-
-}
-  else
-  {
-      QMessageBox::critical(nullptr, QObject::tr("Ajouter une salle"),
-                  QObject::tr("Erreur !.\n"
-                              "Click Cancel to exit."), QMessageBox::Cancel);}
-}
-
-void MainWindow::on_pb_supprimer_s_clicked()
-{
-    int id = ui->lineEdit_num_2->text().toInt();
-    bool test=tmpsalle.supprimer(id);
-    if(test)
-    {ui->tabsalle->setModel(tmpsalle.afficher());//refresh
-        QMessageBox::information(nullptr, QObject::tr("Supprimer une salle"),
-                    QObject::tr("salle supprimée.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);
-
+    int classe = ui->lineEdit_Supp->text().toInt();
+    bool test=tmpClasse.supprimer(classe);
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_Supp->setText(zero);
     }
-    else
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Supprimer une salle"),
-                    QObject::tr("Erreur !.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);}
+    ui->comboBox_numclasse->clear();
+    QSqlQuery query;
+    query.prepare("SELECT NUM_CLASSE FROM CLASSE");
+    query.exec();
+    while (query.next()) {
+            QString num_classe=QString::number(query.value(0).toInt());
+            ui->comboBox_numclasse->addItem(num_classe);
+            ui->comboBox_numclasse_2->addItem(num_classe);
+    }
+    ui->tabClasse->setModel(tmpClasse.afficher());
+    ui->tabemploi->setModel(tmpemploi.afficher());
 }
+
+void MainWindow::on_pb_trouver_Classe_clicked()
+{
+    int classe = ui->lineEdit_classe_2->text().toInt();
+    Classe c=tmpClasse.get_Classe(classe);
+    QString salle=QString::number(c.get_num_salle());
+    ui->lineEdit_Salle_2->setText(salle);
+    ui->lineEdit_Maitresse_2->setText(c.get_Maitresse());
+    ui->lineEdit_Niveau_2->setText(c.get_niveau());
+}
+
+void MainWindow::on_pb_modifier_Classe_clicked()
+{
+    int num_classe = ui->lineEdit_classe_2->text().toInt();
+    int num_salle= ui->lineEdit_Salle_2->text().toInt();
+    QString Maitresse=ui->lineEdit_Maitresse_2->text();
+    QString Niveau=ui->lineEdit_Niveau_2->text();
+
+    Classe c(num_classe,num_salle,Niveau,Maitresse);
+    bool test=c.modifier();
+    ui->tabClasse->setModel(tmpClasse.afficher());
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_Maitresse_2->setText("");
+        ui->lineEdit_Niveau_2->setText("");
+        ui->lineEdit_Salle_2->setText(zero);
+        ui->lineEdit_classe_2->setText(zero);
+    }
+}
+
+void MainWindow::on_lineEdit_Recherche_Classe_textChanged(const QString &arg1)
+{
+    ui->tabClasse_r->setModel(tmpClasse.rechercher(ui->lineEdit_Recherche_Classe->text()));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void MainWindow::on_ajout_emploi_clicked()
+{
+    int id_emploi = ui->lineEdit_emploi->text().toInt();
+    QTime heure= ui->dateTimeEdit->time();
+
+    QDate Datee=ui->dateTimeEdit->date();
+
+    QString seance=ui->lineEdit_seance->text();
+    int num_classe = ui->comboBox_numclasse->currentText().toInt();
+
+  emploi e(id_emploi,heure,Datee,seance,num_classe);
+    bool test=e.ajouter();
+    ui->tabemploi->setModel(tmpemploi.afficher());
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_seance->setText("");
+        ui->lineEdit_emploi->setText(zero);
+       // ui->lineEdit_class_3->setText(zero);
+    }
+}
+
+void MainWindow::on_pushButton_Supp_emploi_clicked()
+{
+    int emploi = ui->lineEdit_Supp_2->text().toInt();
+    bool test=tmpemploi.supprimer(emploi);
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_Supp_2->setText(zero);
+    }
+
+    ui->tabemploi->setModel(tmpemploi.afficher());
+}
+
+
+
+
+
+
+
+
+void MainWindow::on_pb_modifier_emploi_clicked()
+{
+    int id_emploi = ui->lineEdit_emploi_2->text().toInt();
+    QTime heure= ui->dateTimeEdit_2->time();
+
+    QDate Datee=ui->dateTimeEdit_2->date();
+
+    QString seance=ui->lineEdit_seance_2->text();
+    int num_classe = ui->comboBox_numclasse_2->currentText().toInt();
+
+  emploi e(id_emploi,heure,Datee,seance,num_classe);
+    bool test=e.modifier();
+    ui->tabemploi->setModel(tmpemploi.afficher());
+    if(test){
+        QString zero=QString::number(0);
+        ui->lineEdit_seance_2->setText("");
+        ui->lineEdit_emploi_2->setText(zero);
+       // ui->lineEdit_class_3->setText(zero);
+    }
+    }
+void MainWindow::on_lineEdit_Recherche_emploi_textChanged(const QString &arg1)
+{
+  ui->tabemploi_r->setModel(tmpemploi.rechercher(ui->lineEdit_Recherche_emploi->text()));
+}
+
+*/
+

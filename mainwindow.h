@@ -1,9 +1,11 @@
-#ifndef MAINWINDOW_H
+/*#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include "club.h"
-#include "salle.h"
-#include <QMainWindow>
 
+#include <QMainWindow>
+#include"classe.h"
+#include"emploi.h"
+#include <QSqlQuery>
+#include <QSqlQueryModel>
 namespace Ui {
 class MainWindow;
 }
@@ -17,21 +19,35 @@ public:
     ~MainWindow();
 
 private slots:
-    //void on_pushButton_1_clicked();
+    void on_ajout_Classe_clicked();
 
-    void on_pb_ajouter_clicked();
+    void on_pushButton_Supp_Classe_clicked();
 
-    void on_pb_supprimer_clicked();
+    void on_pb_trouver_Classe_clicked();
 
-    void on_pb_ajouter_s_clicked();
+    void on_pb_modifier_Classe_clicked();
 
-    void on_pb_supprimer_s_clicked();
+    void on_lineEdit_Recherche_Classe_textChanged(const QString &arg1);
+
+  //  void on_comboBox_classe_currentIndexChanged(const QString &arg1);
+
+
+ void on_ajout_emploi_clicked();
+
+    void on_pushButton_Supp_emploi_clicked();
+
+   void on_pb_trouver_emploi_clicked();
+
+ void on_pb_modifier_emploi_clicked();
+
+  void on_lineEdit_Recherche_emploi_textChanged(const QString &arg1);
 
 private:
-    Ui::MainWindow *ui/*,*ui_s*/;
-    club tmpclub;
-    salle tmpsalle;
+    Ui::MainWindow *ui;
+    Classe tmpClasse;
+     emploi tmpemploi;
 
 };
 
 #endif // MAINWINDOW_H
+*/

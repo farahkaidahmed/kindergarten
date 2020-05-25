@@ -12,5 +12,4 @@ public:
     void fermerConnexion();
 
 };
-
 #endif // CONNEXION_H
